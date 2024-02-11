@@ -5,7 +5,7 @@ Unlike most programming languages, such as Java, Python, and JavaScript, which r
 # Error Handling in Normal Situations in Golang
 Golang's method for handling errors stands out from other languages. Instead of treating errors as exceptions, Golang considers them as regular values. This approach streamlines the control flow, making the behavior of programs more predictable and generally easier to understand.
 
-Here, I will showcase two examples of scripts that illustrate how to read a file in Golang, demonstrating the conventional method for handling errors in this language.
+Here, I'll be showcasing two examples: one using Python to highlight the conventional approach adopted by numerous languages, and another using Go to exhibit its distinctive approach to addressing the same issue. to read a file in Golang.
 
 Python
 ```
