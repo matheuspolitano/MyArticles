@@ -1,23 +1,17 @@
-## Combining Factory and Functional Options Pattern in Golang
+## Unlocking the Power of Functional Options Pattern in Go
 
-Theses patterns are widely used in Golang and, when combined, can be extremely powerful. Constructing objects in a flexible manner allows for defaults and the ability to customize the object being created through options.
+If you're new to Golang, understanding patterns is particularly crucial for navigating popular libraries and writing code that's flexible, scalable, customizable, and maintainable. One pattern that stands out, especially in the Go ecosystem, is the Functional Options Pattern. This pattern is not commonly found in many other programming languages, so even if you're an experienced engineer, you might not be familiar with it.
 
-This blog post will cover:
+In this blog post, we'll dive into
 
-1 - Factory Pattern 
-2 - Functional Options Pattern
+1 - What Problems Does the Functional Options Pattern Solve?
+2 - Functional Options Pattern Concept
 3 - How to Write Generic Helper Functions
-4 - Implementing Both Design Patterns Together.
+4 - Implementing into an factory method.
 
-## What is Factory Pattern
+## What Problems Does the Functional Options Pattern Solve?
 
-If you are programming code in Golang probably you seen function with "New" prefix, like "NewUser" to create a User. If have saw that, then you know how Factory Pattern works, even if you are not familiar with the term 'Factory Pattern. 
-
-Back to initial concept of Factory Pattern , it is a method that create a concrete Object that implements a common interface or a specific struct. This pattern is particulary useful in maintaining a clean and organized codebase, promoting the principle of DRY(Don't Repat Yourself) by centralizing the creation logic.
-
-In a exemple case where we have a struct called Server, imagine that every time you use the Server struct, it's necessary to pass its fields. But if the field values are always the same, why pass them into a server every time to use the Server? To enhance this process, the factory pattern is used. This way, we can just create a method called NewLocalServer, wich will return the server.
-
-
+In Go, we have the flexibility to create new types based on structs, allowing us to specify only the fields we need. For example
 
 ```
 package main
@@ -41,6 +35,23 @@ func (s *Server) Stop() {
 	log.Printf("Server has stopped %s:%d", s.host, s.port)
 }
 
+func main() {
+	localHostServer := &Server{
+		host:    "127.0.0.1",
+		port:    8080,
+		timeout: 3 * time.Second,
+	}
+	localHostServer.Run()
+}
+
+```
+
+### Creating default values
+
+Now imagine that the most of the time we gonna create a Server with the sames atributes values, we can't pass the default values through type. Then we gonna use Factory Method, in a short explanation is a method that will create an object with values. Example
+
+```
+
 func NewLocalHost() *Server {
 	return &Server{
 		host:    "127.0.0.1",
@@ -55,51 +66,77 @@ func main() {
 	localHostServer.Run()
 }
 
+
+
 ```
 
+Notice that now we have a way to generate a Serve object with value, thats very useful because i inteed that's values is very common to my application. So now we have a function `NewLocalHost` who give to us the object ready to use.
 
-The snippet code above represent a simple use case of Factory Pattern. Now we have a concrete Server, i don't need worry about set up the server.
+### Now How Can We Modify Default Values?
 
-
-However, an issue arises, Lest's suppose that now i want create a LocalHost server but with a different timeout or port value. In this case just the factory pattern wont be able to ACCOMMODATE IT. I could create multiples method factory with diferents timeoutS, but is not the puporse of factory method. Then now to fix it the Function Option Pattern come into play.
-
-
+You can't or you shouldn't, that's the issue. We could work around and pass argument to a Factory Method. 
 
 
-## What is Function Option Pattern
-
-The functional options pettern is a design pattern thats allows flexibiliy when initialization objects in Golang. They can used as required or optional arguments depends on the goals. 
-
-Let's code show use cases
-
+**Avoid implement that way**
 ```
-type OptionsServerFunc func(c *Server) error
+// NewLocalHost creates a new Server instance with optional port and timeout parameters.
+// If port or timeout are not provided (nil), default values are used.
+func NewLocalHost(port interface{}, timeout interface{}) *Server {
+	defaultPort := 8080
+	defaultTimeout := 3 * time.Second
 
-func WithTimeout(t time.Duration) OptionsServerFunc {
-	return func(c *Server) error { c.timeout = t; return nil }
-}
+	// Check and set port if provided
+	actualPort := defaultPort
+	if p, ok := port.(int); ok {
+		actualPort = p
+	}
 
-func WithPort(p int) OptionsServerFunc {
-	return func(c *Server) error { c.port = p; return nil }
-}
-func NewLocalHost(opts ...OptionsServerFunc) (*Server, error) {
-	server := &Server{
+	// Check and set timeout if provided
+	actualTimeout := defaultTimeout
+	if t, ok := timeout.(time.Duration); ok {
+		actualTimeout = t
+	}
+
+	return &Server{
 		host:    "127.0.0.1",
-		port:    8080,
-		timeout: 3 * time.Second,
+		port:    actualPort,
+		timeout: actualTimeout,
 	}
-
-	for _, opt := range opts {
-		if err := opt(server); err != nil {
-			return nil, err
-		}
-	}
-	return server, nil
-
 }
 
 func main() {
-	localHostServer, err := NewLocalHost(WithTimeout(5*time.Second), WithPort(7000))
+	// Example usage of NewLocalHost without parameters, using default values
+	localHostServer := NewLocalHost(9090, nil)
+	localHostServer.Run()
+
+	// After some operations, stop the server
+	// localHostServer.Stop()
+}
+
+```
+
+Passing field values directly to a factory method instead of using the functional options pattern can introduce several issues, particularly as your codebase grows and evolves. Here are some of the problems you might encounter with this approach:
+
+
+
+- `Long Parameter List`: As the number of server parameters grows, the factory method signature become unwildy
+- `Limited Flexibility for Defaults`: Managing default values becomes cumbersome. With direct parameter passing, you either force callers to specify all values explicitly, including those that should often just be defaults, or you create multiple constructors for different scenarios, which leads to cluttered and less maintainable code.
+
+- `Compromised Readability:` When a function is called with multiple parameters, especially if they are of the same type, it's hard to tell what each parameter represents without looking up the function definition. This makes the code less readable and more error-prone.
+
+- `Reduced Encapsilation and Flexibility`: Directly passing parameters requires exposing the internal structure and implementation details of your objects. This can reduce the dlexibility to change the internal implementation.
+
+- `Inconsistent Object State:` Without a clear mechanism to enforce the setting of necessary fields or validate the configuration, it's easy to end up with objects in an inconsistent or invalid state. 
+
+
+
+## How Function Options Pattern solve all of those issues?
+
+This pattern are functions that you can agregate to a Factory Method an Example
+
+```
+func main() {
+	localHostServer, err := NewLocalHost(WithPort(9090))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -107,7 +144,30 @@ func main() {
 }
 ```
 
-The code snipped above has used Function Option Pattern, now it's possible personalise through Generic Helper Functions WithTimeOut or WithPort the object returned by the factory method. Now lets break implementation down in two part. How create a Generic Helper Function and how implement them into a factory method.
+
+The code snipped above has used Function Option Pattern, now it's possible personalise the values through `Generic Helper Functions` WithTimeOut or WithPort. 
+
+
+Notice that we just have showed the `main` using the Options Pattern not the over all implementation. I've wanted point out how easy is use this methods instead pass the value directly. Couples advantages of use that Pattern:
+
+- `Flexible`: It allows for easy addition of new options without breaking existing code.
+
+- `Scalable`: The pattern scales well with complex configurations and evolving software requirements.
+
+- `Readable`: Code using functional options is often more readable than alternatives, making it easier to understand what options are being set.
+
+- `Intuitive`: The pattern leverages Go's first-class functions and closures, making it intuitive for those familiar with these concepts.
+
+- `Customizable`: Offers a high degree of customization, allowing developers to define options that can precisely control the behavior of their objects.
+
+- `Maintainable`: The pattern promotes maintainability by keeping configuration logic centralized and decoupled from the object's core functionality.
+
+
+
+
+But is missing the full implementation, `how create a Generic Helper  Function` and `how implement them into a Factory Method`?
+
+
 
 
 ### How create a Generic Helper 
@@ -204,7 +264,44 @@ func NewLocalHost(opts ...OptionsServerFunc) (*Server, error) {
 
 Now we have all of Functional Options Pattern implemented :)
 
+```
+type OptionsServerFunc func(c *Server) error
+
+func WithTimeout(t time.Duration) OptionsServerFunc {
+	return func(c *Server) error { c.timeout = t; return nil }
+}
+
+func WithPort(p int) OptionsServerFunc {
+	return func(c *Server) error { c.port = p; return nil }
+}
+func NewLocalHost(opts ...OptionsServerFunc) (*Server, error) {
+	server := &Server{
+		host:    "127.0.0.1",
+		port:    8080,
+		timeout: 3 * time.Second,
+	}
+
+	for _, opt := range opts {
+		if err := opt(server); err != nil {
+			return nil, err
+		}
+	}
+	return server, nil
+
+}
+
+func main() {
+	localHostServer, err := NewLocalHost(WithTimeout(5*time.Second), WithPort(7000))
+	if err != nil {
+		log.Fatal(err)
+	}
+	localHostServer.Run()
+}
+```
+
 ## Conclusion
+
+Throughout our exploration, we've delved into the core aspects of this pattern, shedding light on its widespread adoption in the Go programming landscape. It's my hope that this discussion has illuminated the subject for you. Remember, the path to mastering programming is paved with practice. Stay curious, keep coding, and let's continue to evolve our skills together
 
 
 
