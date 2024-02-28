@@ -258,7 +258,7 @@ func NewLocalHost(opts ...OptionsServerFunc) (*Server, error) {
 }
 ```
 
-The code snippet features a loop within the NewLocalHost function that iterates over a slice of OptionsServerFunc. Each opt within the slice is a function accepting a pointer to a Server as its argument, and it returns an error. As the loop progresses, each opt is invoked with server as its parameter. Should any opt return an error, the loop halts prematurely, and the NewLocalHost function returns both nil and the encountered error.
+The code snippet features a loop within the `NewLocalHost` function that iterates over a slice of `OptionsServerFunc`. Each `opt` within the slice is a function accepting a pointer to a `Server` as its argument, and it returns an error. As the loop progresses, each opt is invoked with server as its parameter. Should any opt return an error, the loop halts prematurely, and the NewLocalHost function returns both nil and the encountered error.
 
 This design facilitates a modular and flexible configuration of the Server instance, allowing for a sequence of modifications or validations as defined by the OptionsServerFunc in the opts slice.
 
