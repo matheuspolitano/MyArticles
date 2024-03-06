@@ -1,0 +1,7 @@
+site_name: MP Personal Blog
+nav:
+  - Home: index.md
+  - Articles:
+    - How use try-catch mechanism in Golang?: Article-1/index.md
+    - Options Functional Pattern: Article-2/index.md
+    - Log in Go: Article-3/index.md
