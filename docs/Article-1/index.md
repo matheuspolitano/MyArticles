@@ -2,6 +2,8 @@
 
 Unlike most programming languages, such as Java, Python, and JavaScript, which rely on a try-catch mechanism for error handling, Golang treats errors in a markedly different way. In Golang, errors are simply regarded as normal return values, integrating smoothly with the language's flow.
 
+![Alt text for the image](article-1/static/base.png)
+
 # Error Handling in Normal Situations in Golang
 Golang's method for handling errors stands out from other languages. Instead of treating errors as exceptions, Golang considers them as regular values. This approach streamlines the control flow, making the behavior of programs more predictable and generally easier to understand.
 
