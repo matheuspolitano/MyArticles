@@ -2,6 +2,8 @@
 
 If you're new to Golang, understanding patterns is particularly crucial for navigating popular libraries, SDKs and writing code that's flexible, scalable, customizable, and maintainable. One pattern that stands out, especially in the Go ecosystem, is the Functional Options Pattern. This pattern is not commonly found in many other programming languages, so even if you're an experienced engineer, you might not be familiar with it.
 
+
+![Alt text for the image](https://raw.githubusercontent.com/matheuspolitano/MyArticles/master/docs/Article-2/static/base.png)
 In this blog post, we'll dive into
 
 1. What Problems Does the Functional Options Pattern Solve?
