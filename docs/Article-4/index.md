@@ -18,7 +18,9 @@ The speed acceses
 - main memory (or RAM) between 50 abd 100 times slower then L1
 
 
-![Alt text for the image](https://raw.githubusercontent.com/matheuspolitano/MyArticles/master/docs/Article-1/static/base.png)
+![Alt text for the image](https://raw.githubusercontent.com/matheuspolitano/MyArticles/master/docs/Article-4/static/cache1.png)
+
+![Alt text for the image](https://raw.githubusercontent.com/matheuspolitano/MyArticles/master/docs/Article-4/static/cache2.png)
 
 
 
